@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>책 추가 — 나의 서고</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body class="add-page">
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="back-btn">← 서고로</a>
+      <h1>책 추가하기</h1>
+      <span></span>
+    </div>
+  </header>
+
+  <main class="add-main">
+    <!-- ISBN 입력 -->
+    <section class="isbn-section">
+      <h2>ISBN으로 검색</h2>
+      <div class="isbn-input-row">
+        <input type="text" id="isbnInput" placeholder="ISBN 13자리 입력..." maxlength="17" inputmode="numeric">
+        <button id="scanBtn"   class="btn-scan">📷 스캔</button>
+        <button id="searchBtn" class="btn-primary">검색</button>
+      </div>
+
+      <div id="scanArea" class="scan-area hidden">
+        <div id="reader"></div>
+        <button id="stopScanBtn" class="btn-stop-scan">스캔 중지</button>
+        <p class="scan-hint">책 뒷면 바코드를 화면 중앙에 맞춰주세요</p>
+      </div>
+
+      <div id="searchStatus" class="search-status"></div>
+    </section>
+
+    <!-- 책 정보 폼 -->
+    <section id="bookForm" class="book-form hidden">
+      <div class="form-layout">
+        <div class="form-cover-side">
+          <img id="coverPreview" src="" alt="표지">
+          <button id="changeCoverBtn" class="btn-text-small">표지 URL 직접 입력</button>
+          <input type="text" id="coverUrlInput" placeholder="https://..." class="cover-url-input hidden">
+        </div>
+        <div class="form-fields">
+          <div class="field-group">
+            <label>제목 *</label>
+            <input type="text" id="fieldTitle" placeholder="책 제목">
+          </div>
+          <div class="field-group">
+            <label>저자</label>
+            <input type="text" id="fieldAuthor" placeholder="저자명">
+          </div>
+          <div class="field-group">
+            <label>출판사</label>
+            <input type="text" id="fieldPublisher" placeholder="출판사">
+          </div>
+          <div class="field-group">
+            <label>출판연도</label>
+            <input type="text" id="fieldYear" placeholder="예: 2023" maxlength="4" inputmode="numeric">
+          </div>
+          <div class="field-group">
+            <label>언어</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="language" value="korean" id="langKorean" checked> 한국어
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="language" value="foreign" id="langForeign"> 외서
+              </label>
+            </div>
+          </div>
+
+          <!-- ── 새 필드: 책 상태 ── -->
+          <div class="field-group">
+            <label>책 상태</label>
+            <div class="radio-group wrap">
+              <label class="radio-label">
+                <input type="radio" name="bookStatus" value="owned" id="statusOwned" checked> 소장
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="bookStatus" value="borrowed" id="statusBorrowed"> 대출중
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="bookStatus" value="wishlist" id="statusWishlist"> 위시리스트
+              </label>
+            </div>
+          </div>
+
+          <!-- ── 새 필드: 위치 (위시리스트 선택 시 숨김) ── -->
+          <div class="field-group" id="locationGroup">
+            <label>책 위치</label>
+            <input type="text" id="fieldLocation" placeholder="예: 엄마집, 딸집, 도서관..."
+                   list="locationSuggestions" autocomplete="off">
+            <datalist id="locationSuggestions">
+              <option value="도서관">
+            </datalist>
+          </div>
+
+          <div class="field-group">
+            <label>책 소개</label>
+            <textarea id="fieldDescription" placeholder="책 소개 (자동 입력됨)" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label>메모</label>
+            <textarea id="fieldMemo" placeholder="이 책에 대한 메모..." rows="2"></textarea>
+          </div>
+
+          <input type="hidden" id="fieldIsbn">
+          <input type="hidden" id="fieldCover">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button id="cancelBtn" class="btn-cancel">취소</button>
+        <button id="saveBtn"   class="btn-save">서고에 추가</button>
+      </div>
+    </section>
+
+    <div id="emptyState" class="empty-state">
+      <div class="empty-icon">📖</div>
+      <p>ISBN을 입력하거나 바코드를 스캔하면<br>책 정보가 자동으로 불러와집니다.</p>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/add-book.js"></script>
+</body>
+</html>

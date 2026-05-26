@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 서고</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <h1>나의 서고</h1>
+        <span class="book-count" id="bookCount"></span>
+      </div>
+      <div class="header-right">
+        <button class="current-member-btn" id="currentMemberBtn">독자 선택</button>
+        <a href="add.html" class="add-btn">+ 책 추가</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="controls">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="제목, 저자, 출판사로 검색...">
+      </div>
+      <select id="sortSelect">
+        <option value="newest">최신 추가순</option>
+        <option value="title">제목순</option>
+        <option value="author">저자순</option>
+        <option value="year">출판연도순</option>
+      </select>
+    </div>
+
+    <!-- 상태 필터 -->
+    <div class="filter-row">
+      <span class="filter-label">상태</span>
+      <div class="filters">
+        <button class="filter-btn status-filter-btn active" data-status="all">전체</button>
+        <button class="filter-btn status-filter-btn" data-status="owned">소장</button>
+        <button class="filter-btn status-filter-btn" data-status="borrowed">대출중</button>
+        <button class="filter-btn status-filter-btn" data-status="wishlist">위시리스트</button>
+      </div>
+    </div>
+
+    <!-- 언어 필터 -->
+    <div class="filter-row">
+      <span class="filter-label">언어</span>
+      <div class="filters">
+        <button class="filter-btn lang-filter-btn active" data-lang="all">전체</button>
+        <button class="filter-btn lang-filter-btn" data-lang="korean">한국어</button>
+        <button class="filter-btn lang-filter-btn" data-lang="foreign">외서</button>
+      </div>
+    </div>
+
+    <div class="book-grid" id="bookGrid">
+      <div class="loading">책을 불러오는 중...</div>
+    </div>
+  </main>
+
+  <!-- ── 책 상세 모달 ──────────────────────────────────────── -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="bookModal">
+      <button class="modal-close" id="modalClose">✕</button>
+
+      <div class="modal-content">
+        <div class="modal-cover">
+          <img id="modalCover" src="" alt="">
+          <div class="modal-cover-placeholder" id="modalCoverPlaceholder"></div>
+        </div>
+        <div class="modal-info">
+          <h2 id="modalTitle"></h2>
+          <p class="modal-author" id="modalAuthor"></p>
+          <div class="modal-meta" id="modalMeta"></div>
+          <div class="modal-status-row" id="modalStatusRow"></div>
+          <p class="modal-description" id="modalDescription"></p>
+          <div class="modal-memo" id="modalMemoWrap">
+            <h4>메모</h4>
+            <p id="modalMemo"></p>
+          </div>
+          <div class="modal-rec" id="modalRecWrap">
+            <p id="modalRec"></p>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-recommend" id="modalRecommendBtn">👍 추천</button>
+            <button class="btn-delete"    id="modalDelete">삭제</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 가족 독서 기록 섹션 ── -->
+      <div class="modal-reviews-section">
+        <div class="reviews-header">
+          <span class="reviews-title">📚 가족 독서 기록</span>
+        </div>
+
+        <!-- 리뷰 목록 -->
+        <div id="reviewsList"></div>
+
+        <!-- 리뷰 편집 폼 -->
+        <div id="reviewFormWrap" class="review-form hidden">
+          <p class="review-form-title" id="reviewFormTitle">독서 기록</p>
+
+          <!-- 독서 상태 -->
+          <div class="review-status-btns">
+            <button class="review-status-btn active" data-status="read">읽었어요</button>
+            <button class="review-status-btn"        data-status="reading">읽는 중</button>
+            <button class="review-status-btn"        data-status="want-to-read">읽고싶어요</button>
+          </div>
+
+          <!-- 읽은 횟수 (읽었어요일 때만) -->
+          <div class="read-count-wrap" id="readCountWrap">
+            <span class="read-count-label">읽은 횟수</span>
+            <div class="count-btns">
+              <button class="count-btn" id="countMinus">−</button>
+              <span class="count-display" id="readCountDisplay">1</span>
+              <button class="count-btn" id="countPlus">+</button>
+            </div>
+          </div>
+
+          <!-- 별점 -->
+          <div class="stars-input-wrap">
+            <p class="stars-input-label">별점</p>
+            <div class="stars-input" id="starsInput">
+              <button class="star-btn" data-val="1">★</button>
+              <button class="star-btn" data-val="2">★</button>
+              <button class="star-btn" data-val="3">★</button>
+              <button class="star-btn" data-val="4">★</button>
+              <button class="star-btn" data-val="5">★</button>
+            </div>
+          </div>
+
+          <!-- 한줄 감상 -->
+          <input type="text" id="reviewOneLiner" placeholder="한줄 감상 (선택)" maxlength="120">
+
+          <!-- 독서 노트 -->
+          <textarea id="reviewNotes" placeholder="독서 노트 — 인상적인 구절, 생각 등 자유롭게..." rows="4"></textarea>
+
+          <div class="review-form-actions">
+            <button class="btn-review-cancel" id="reviewCancelBtn">취소</button>
+            <button class="btn-review-save"   id="reviewSaveBtn">저장</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 가족 멤버 선택 모달 ──────────────────────────────── -->
+  <div class="modal-overlay" id="memberPickerOverlay">
+    <div class="modal member-picker-modal">
+      <div class="member-picker-content">
+        <h2>나는 누구인가요?</h2>
+        <p>선택하면 내 독서 기록과 별점이 따로 저장됩니다</p>
+
+        <div id="memberPickerList" class="member-list"></div>
+
+        <div class="member-add-row">
+          <input type="text" id="newMemberNameInput" placeholder="새 이름 추가..." maxlength="20">
+          <button id="addMemberSubmit">추가</button>
+        </div>
+
+        <button class="member-picker-skip" id="memberPickerSkip">나중에 (둘러보기만)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/members.js"></script>
+  <script src="js/library.js"></script>
+</body>
+</html>
